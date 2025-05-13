@@ -31,8 +31,11 @@ jobs:
       - name: Backup E2E testing Branch
         shell: bash
         run: |
-          git branch -D backup-e2e-testing 2>/dev/null || true
-          git push origin --delete backup-e2e-testing
+          if git ls-remote --heads origin backup-e2e-testing | grep -q backup-e2e-testing; then
+            git push origin --delete backup-e2e-testing
+          else
+            echo "→ remote backup-e2e-testing doesn’t exist, skipping deletion"
+          fi
           git fetch origin e2e-testing
           git checkout -b backup-e2e-testing origin/e2e-testing
           git push origin backup-e2e-testing
