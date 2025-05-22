@@ -48,12 +48,39 @@ jobs:
             -H "Accept: application/vnd.github+json" \
             https://api.github.com/repos/1919kiran/github-actions-test/branches/e2e-testing/protection
 
-
       - name: Delete E2E testing Branch
         shell: bash
         run: |
           git push origin --delete e2e-testing
           git branch -D e2e-testing 2>/dev/null || true
+
+      - name: Recreate E2E branch protection rule
+        shell: bash
+        run: |
+          curl -X PUT \
+            -H "Authorization: Bearer ${{ secrets.GH_PAT }}" \
+            -H "Accept: application/vnd.github+json" \
+            https://api.github.com/repos/1919kiran/github-actions-test/branches/e2e-testing/protection \
+            -d '{
+              "required_status_checks": null,
+              "enforce_admins": true,
+              "required_pull_request_reviews": {
+                "dismiss_stale_reviews": false,
+                "require_code_owner_reviews": false,
+                "required_approving_review_count": 1,
+                "bypass_pull_request_allowances": {
+                  "users": ["1919kiran"]
+                }
+              },
+              "restrictions": null,
+              "required_linear_history": true,
+              "allow_force_pushes": {
+                "enabled": true,
+                "users": ["1919kiran"]
+              },
+              "allow_deletions": false
+            }'
+
 
       - name: Recreate E2E testing Branch
         shell: bash
