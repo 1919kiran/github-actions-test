@@ -54,6 +54,14 @@ jobs:
           git push origin --delete e2e-testing
           git branch -D e2e-testing 2>/dev/null || true
 
+      - name: Recreate E2E testing Branch
+        shell: bash
+        run: |
+          git checkout main
+          git pull origin main
+          git checkout -b e2e-testing
+          git push origin e2e-testing
+          
       - name: Recreate E2E branch protection rule
         shell: bash
         run: |
@@ -81,11 +89,4 @@ jobs:
               "allow_deletions": false
             }'
 
-
-      - name: Recreate E2E testing Branch
-        shell: bash
-        run: |
-          git checkout main
-          git pull origin main
-          git checkout -b e2e-testing
-          git push origin e2e-testing
+      
